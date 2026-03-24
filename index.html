@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chopper M.D. — Questões Médicas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f5f4f0;--surface:#fff;--border:#e2e0da;--ink:#1a1917;--ink2:#6b6860;--ink3:#a8a59f;--accent:#c8440a;--accent2:#1a5c9e;--green:#2d8c5e;--gold:#b8860b;--red:#c82a2a;--radius:10px;--rsm:7px;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+#login{position:fixed;inset:0;background:#0f1219;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.lcard{width:100%;max-width:380px;text-align:center;}
+.llogo{width:64px;height:64px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;}
+.ltitle{font-family:'Lora',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;}
+.lsub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:28px;}
+.linput{width:100%;padding:13px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--rsm);font-size:15px;color:#fff;outline:none;margin-bottom:12px;font-family:'Inter',sans-serif;letter-spacing:2px;}
+.linput::placeholder{letter-spacing:0;color:rgba(255,255,255,.2);}
+.linput:focus{border-color:rgba(200,68,10,.5);}
+.lbtn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:var(--rsm);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;}
+.lbtn:hover{background:#b03a08;}
+.lerr{color:#ff6b6b;font-size:13px;margin-top:10px;display:none;}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;padding:0 24px;gap:4px;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.nlogo{font-family:'Lora',serif;font-size:16px;font-weight:700;color:var(--ink);margin-right:20px;display:flex;align-items:center;gap:8px;}
+.nlogo-icon{font-size:20px;}
+.ntab{padding:5px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--ink2);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;transition:all .15s;}
+.ntab:hover{background:var(--bg);}.ntab.active{background:var(--bg);color:var(--accent);font-weight:600;}
+.nout{margin-left:auto;cursor:pointer;font-size:12px;color:var(--ink3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;background:none;font-family:'Inter',sans-serif;transition:all .15s;}
+.nout:hover{color:var(--red);border-color:var(--red);}
+
+.view{display:none;}.view.active{display:block;}
+.cnt{max-width:700px;margin:0 auto;padding:28px 20px 80px;}
+
+/* SEÇÕES */
+.sec{margin-bottom:22px;}
+.sec-title{font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;}
+
+/* CHIPS DE MATÉRIA */
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{cursor:pointer;padding:7px 15px;border-radius:20px;font-size:13px;font-weight:500;color:var(--ink2);border:1.5px solid var(--border);background:var(--surface);transition:all .15s;user-select:none;}
+.chip:hover{border-color:var(--ink3);}
+.chip.on{color:#fff;}
+/* Ambulatório */
+.chip.pneu.on{background:#1a5c9e;border-color:#1a5c9e;}
+.chip.neur.on{background:#7b3fa0;border-color:#7b3fa0;}
+.chip.psiq.on{background:#2d6a4f;border-color:#2d6a4f;}
+.chip.orto.on{background:#b8860b;border-color:#b8860b;}
+.chip.urg.on{background:#c82a2a;border-color:#c82a2a;}
+.chip.tut.on{background:#0d7377;border-color:#0d7377;}
+/* Básicas */
+.chip.fisio.on{background:#1a6b4a;border-color:#1a6b4a;}
+.chip.anat.on{background:#5a3e8a;border-color:#5a3e8a;}
+.chip.bioq.on{background:#8a3e1a;border-color:#8a3e1a;}
+.chip.farm.on{background:#1a4a8a;border-color:#1a4a8a;}
+.chip.hist.on{background:#6b4a1a;border-color:#6b4a1a;}
+.chip.pato.on{background:#8a1a2a;border-color:#8a1a2a;}
+.chip.micro.on{background:#1a6b6b;border-color:#1a6b6b;}
+.chip.biocell.on{background:#4a1a6b;border-color:#4a1a6b;}
+/* Neutro (tipo/nível) */
+.chip.neutro.on{background:var(--ink);border-color:var(--ink);}
+
+/* DIVISOR DE GRUPO */
+.chips-group-label{font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;width:100%;margin-top:4px;margin-bottom:2px;}
+
+/* TEMA */
+textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rsm);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;padding:12px 14px;outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.tema-hint{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.5;}
+
+/* UPLOAD */
+.upload-area{border:1.5px dashed var(--border);border-radius:var(--rsm);padding:14px;text-align:center;cursor:pointer;position:relative;background:var(--surface);transition:all .2s;}
+.upload-area:hover{border-color:var(--accent2);}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-text{font-size:13px;color:var(--ink2);}
+.upload-text b{color:var(--accent2);}
+.file-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.fpill{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--ink2);}
+.frm{cursor:pointer;color:var(--ink3);font-size:14px;margin-left:2px;}.frm:hover{color:var(--red);}
+
+/* BTN GERAR */
+.btn-gerar{width:100%;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px;box-shadow:0 4px 14px rgba(200,68,10,.25);}
+.btn-gerar:hover:not(:disabled){background:#b03a08;transform:translateY(-1px);}
+.btn-gerar:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-gerar .ll{display:none;}.btn-gerar.loading .ln{display:none;}.btn-gerar.loading .ll{display:inline;}
+
+/* RESULTADO */
+.resultado{display:none;margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.resultado.show{display:block;animation:up .3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.res-header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.res-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.rtag{font-size:11px;padding:3px 9px;border-radius:3px;font-weight:500;}
+.rtag-mat{background:rgba(26,92,158,.7);}
+.rtag-tipo{background:rgba(200,68,10,.7);}
+.rtag-nivel{background:rgba(45,140,94,.7);}
+.res-actions{display:flex;gap:6px;}
+.rbtn{cursor:pointer;padding:6px 13px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:5px;color:rgba(255,255,255,.9);font-size:12px;font-family:'Inter',sans-serif;font-weight:500;transition:all .15s;}
+.rbtn:hover{background:rgba(255,255,255,.2);}
+.rbtn.primary{background:rgba(200,68,10,.8);border-color:transparent;}
+
+/* LOADING */
+.loading-area{padding:32px 24px;text-align:center;display:none;}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--ink3);}
+
+/* QUESTÃO */
+.q-body{padding:28px 24px;}
+.q-enunciado{font-size:14px;line-height:1.9;color:var(--ink);padding:18px 20px;margin-bottom:20px;background:#f8f7f4;border-left:3px solid var(--accent2);border-radius:0 var(--rsm) var(--rsm) 0;}
+.q-alts{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+.q-alt{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rsm);cursor:pointer;font-size:14px;line-height:1.65;color:var(--ink2);transition:all .15s;background:var(--surface);}
+.q-alt:hover{border-color:var(--accent2);color:var(--ink);background:#f8f8ff;}
+.q-alt.sel{border-color:var(--accent2);background:rgba(26,92,158,.04);color:var(--ink);}
+.q-alt.ok{border-color:var(--green);background:rgba(45,140,94,.05);color:var(--ink);}
+.q-alt.nok{border-color:var(--red);background:rgba(200,42,42,.04);}
+.q-letra{min-width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ink3);flex-shrink:0;transition:all .15s;margin-top:1px;}
+.q-alt.sel .q-letra{background:var(--accent2);color:#fff;}
+.q-alt.ok .q-letra{background:var(--green);color:#fff;}
+.q-alt.nok .q-letra{background:var(--red);color:#fff;}
+
+/* GABARITO */
+.gab{margin:0 24px 24px;padding:20px;background:rgba(45,140,94,.06);border:1.5px solid rgba(45,140,94,.2);border-radius:var(--radius);display:none;}
+.gab.show{display:block;animation:up .3s ease;}
+.gab-title{font-weight:600;color:var(--green);margin-bottom:12px;font-size:14px;display:flex;align-items:center;gap:6px;}
+.gab-text{font-size:13.5px;line-height:1.85;color:var(--ink2);white-space:pre-wrap;}
+
+.errbox{padding:12px 16px;background:rgba(200,42,42,.07);border:1px solid rgba(200,42,42,.25);border-radius:var(--rsm);color:var(--red);font-size:13px;margin-top:10px;}
+.btn-nova{width:100%;margin-top:12px;padding:12px;background:transparent;border:1.5px dashed var(--border);border-radius:var(--radius);color:var(--ink3);font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-nova:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* HISTÓRICO */
+.hstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.hstat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.hstat-n{font-family:'Lora',serif;font-size:26px;font-weight:700;}
+.hstat-l{font-size:11px;color:var(--ink3);margin-top:3px;}
+.hstat-p{font-size:12px;font-weight:600;color:var(--green);margin-top:2px;}
+.hfils{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.hfil{cursor:pointer;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;color:var(--ink2);border:1px solid var(--border);background:var(--surface);transition:all .15s;}
+.hfil.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.hlist{display:flex;flex-direction:column;gap:8px;}
+.hi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.hih{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;}
+.hdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.hinfo{flex:1;min-width:0;}
+.htema{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hmeta{font-size:11px;color:var(--ink3);margin-top:2px;}
+.hico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hico.hit{background:rgba(45,140,94,.12);}
+.hico.miss{background:rgba(200,42,42,.1);}
+.hico.pend{background:rgba(184,134,11,.1);}
+.hib{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+.hi.open .hib{display:block;animation:up .2s ease;}
+.hprev{font-size:12px;line-height:1.7;color:var(--ink2);margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--rsm);max-height:110px;overflow-y:auto;white-space:pre-wrap;}
+.hgab{margin-top:8px;padding:10px;background:rgba(45,140,94,.05);border:1px solid rgba(45,140,94,.2);border-radius:var(--rsm);font-size:12px;color:var(--ink2);max-height:80px;overflow-y:auto;}
+.hfoot{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.hbtn{cursor:pointer;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--bg);color:var(--ink2);font-family:'Inter',sans-serif;transition:all .15s;}
+.hbtn:hover{border-color:var(--ink3);color:var(--ink);}
+.hbtn.danger:hover{border-color:var(--red);color:var(--red);}
+.hempty{text-align:center;padding:48px 20px;color:var(--ink3);font-size:14px;}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.pi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.ptema{font-size:12px;font-weight:600;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pbw{height:5px;background:var(--bg);border-radius:3px;margin-bottom:5px;}
+.pb{height:100%;border-radius:3px;transition:width .5s;}
+.pst{font-size:11px;color:var(--ink3);display:flex;justify-content:space-between;}
+
+@media(max-width:600px){.hstats{grid-template-columns:1fr 1fr;}.pgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div class="llogo">🩺</div>
+    <div class="ltitle">Chopper M.D.</div>
+    <div class="lsub">Afya UniDomPedro · 6º Período · 2026.1</div>
+    <input class="linput" type="password" id="senhaInput" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter')login()">
+    <button class="lbtn" onclick="login()">Entrar →</button>
+    <div class="lerr" id="lerr">Senha incorreta.</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nlogo"><span class="nlogo-icon">🩺</span> Chopper M.D.</div>
+  <button class="ntab active" onclick="sv('gerar',this)">Gerar</button>
+  <button class="ntab" onclick="sv('historico',this)">Histórico</button>
+  <button class="nout" onclick="logout()">Sair</button>
+</nav>
+
+<!-- VIEW GERAR -->
+<div id="view-gerar" class="view active">
+<div class="cnt">
+
+  <div class="sec">
+    <div class="sec-title">Matéria — selecione uma ou mais</div>
+    <div class="chips">
+      <div class="chips-group-label">Ambulatório</div>
+      <div class="chip pneu" onclick="togMat(this,'Pneumologia')">🫁 Pneumologia</div>
+      <div class="chip neur" onclick="togMat(this,'Neurologia')">🧠 Neurologia</div>
+      <div class="chip psiq" onclick="togMat(this,'Psiquiatria')">🧩 Psiquiatria</div>
+      <div class="chip orto" onclick="togMat(this,'Ortopedia/Reumatologia')">🦴 Ortopedia</div>
+      <div class="chip urg" onclick="togMat(this,'Urgência e Emergência')">🚨 Urgência</div>
+      <div class="chip tut" onclick="togMat(this,'Tutoria')">📖 Tutoria</div>
+      <div class="chips-group-label">Básicas</div>
+      <div class="chip fisio" onclick="togMat(this,'Fisiologia')">⚡ Fisiologia</div>
+      <div class="chip anat" onclick="togMat(this,'Anatomia')">🦷 Anatomia</div>
+      <div class="chip bioq" onclick="togMat(this,'Bioquímica')">🧪 Bioquímica</div>
+      <div class="chip farm" onclick="togMat(this,'Farmacologia')">💊 Farmacologia</div>
+      <div class="chip hist" onclick="togMat(this,'Histologia')">🔬 Histologia</div>
+      <div class="chip pato" onclick="togMat(this,'Patologia')">🧫 Patologia</div>
+      <div class="chip micro" onclick="togMat(this,'Microbiologia/Imunologia')">🦠 Micro/Imuno</div>
+      <div class="chip biocell" onclick="togMat(this,'Biologia Celular e Molecular')">🧬 Bio Celular</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Tipo de Questão</div>
+    <div class="chips" id="chips-tipo">
+      <div class="chip neutro on" onclick="selChip(this,'chips-tipo','Variado')">🎲 Variado</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-tipo','QOME')">🎯 Múltipla Escolha</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-tipo','QOOI')">🔢 Ordenação</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-tipo','QOAS')">📋 Análise de Sentenças</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-tipo','QOVF')">✅ Verdadeiro/Falso</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-tipo','QOAR')">⚖️ Asserção e Razão</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Nível de Dificuldade</div>
+    <div class="chips" id="chips-nivel">
+      <div class="chip neutro on" onclick="selChip(this,'chips-nivel','Variado')">🎲 Variado</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-nivel','Fácil')">🟢 Fácil</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-nivel','Moderada')">🟡 Moderada</div>
+      <div class="chip neutro" onclick="selChip(this,'chips-nivel','Difícil')">🔴 Difícil</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Tema</div>
+    <textarea id="tema" placeholder="Ex: Fisiopatologia da DPOC, mecanismo dos broncodilatadores...&#10;Pode escrever mais de um tema separado por vírgula"></textarea>
+    <div class="tema-hint">💡 Deixe em branco para gerar um tema aleatório da matéria selecionada</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Material de Apoio — opcional</div>
+    <div class="upload-area" id="uzone">
+      <input type="file" id="finput" multiple accept=".pdf,.txt,.md" onchange="hFiles(event)">
+      <div class="upload-text">📎 Arraste ou <b>clique</b> para adicionar PDF ou TXT (máx. 2)</div>
+    </div>
+    <div class="file-pills" id="fpills"></div>
+  </div>
+
+  <button class="btn-gerar" id="btnGerar" onclick="gerar()">
+    <span class="ln">✦ Gerar Questão</span>
+    <span class="ll">Gerando<span id="dots">...</span></span>
+  </button>
+  <div id="ebox"></div>
+
+  <div class="resultado" id="resultado">
+    <div class="res-header">
+      <div class="res-tags">
+        <span class="rtag rtag-mat" id="tag-mat">—</span>
+        <span class="rtag rtag-tipo" id="tag-tipo">—</span>
+        <span class="rtag rtag-nivel" id="tag-nivel">—</span>
+      </div>
+      <div class="res-actions">
+        <button class="rbtn" onclick="copiar()">📋 Copiar</button>
+        <button class="rbtn primary" onclick="vGab()">🔑 Gabarito</button>
+      </div>
+    </div>
+    <div class="loading-area" id="loadingArea">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Gerando questão...</div>
+    </div>
+    <div class="q-body" id="qfmt" style="display:none"></div>
+    <div class="gab" id="gab">
+      <div class="gab-title">🔑 Gabarito & Explicação Didática</div>
+      <div class="gab-text" id="gabtxt"></div>
+    </div>
+  </div>
+  <button class="btn-nova" id="btnNova" style="display:none" onclick="nova()">+ Gerar nova questão sobre o mesmo tema</button>
+
+</div>
+</div>
+
+<!-- VIEW HISTÓRICO -->
+<div id="view-historico" class="view">
+<div class="cnt">
+  <div class="hstats">
+    <div class="hstat"><div class="hstat-n" id="st">0</div><div class="hstat-l">Geradas</div></div>
+    <div class="hstat"><div class="hstat-n" id="sa" style="color:var(--green)">0</div><div class="hstat-l">Acertos</div><div class="hstat-p" id="sp">—</div></div>
+    <div class="hstat"><div class="hstat-n" id="se" style="color:var(--red)">0</div><div class="hstat-l">Erros</div></div>
+    <div class="hstat"><div class="hstat-n" id="spe" style="color:var(--gold)">0</div><div class="hstat-l">Pendentes</div></div>
+  </div>
+  <div id="perfsec" style="display:none;margin-bottom:20px">
+    <div class="sec-title">Desempenho por Tema</div>
+    <div class="pgrid" id="perfgrid"></div>
+  </div>
+  <div class="hfils">
+    <div class="hfil on" onclick="filH(this,'todas')">Todas</div>
+    <div class="hfil" onclick="filH(this,'acertos')">✅ Acertos</div>
+    <div class="hfil" onclick="filH(this,'erros')">❌ Erros</div>
+    <div class="hfil" onclick="filH(this,'pendentes')">🕐 Pendentes</div>
+  </div>
+  <div class="hlist" id="hlist">
+    <div class="hempty">📭 Nenhuma questão ainda.<br>Vá para <b>Gerar</b> para começar!</div>
+  </div>
+</div>
+</div>
+
+<script>
+const PASS='afya2026';
+let hist=JSON.parse(localStorage.getItem('cmd_hist')||'[]');
+const S={mats:[],tipo:'Variado',nivel:'Variado',arqs:[],q:'',gab:'',hf:'todas'};
+let di=null;
+
+// AUTH
+function login(){
+  const v=document.getElementById('senhaInput').value.trim();
+  if(v===PASS){localStorage.setItem('cmd_auth','ok');document.getElementById('login').style.display='none';}
+  else{const e=document.getElementById('lerr');e.style.display='block';document.getElementById('senhaInput').value='';setTimeout(()=>e.style.display='none',2500);}
+}
+function logout(){localStorage.removeItem('cmd_auth');location.reload();}
+if(localStorage.getItem('cmd_auth')==='ok')document.getElementById('login').style.display='none';
+
+// NAV
+function sv(v,btn){
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(v==='historico')rHist();
+}
+
+// CHIPS
+function togMat(el,m){
+  el.classList.toggle('on');
+  S.mats=el.classList.contains('on')?[...S.mats,m]:S.mats.filter(x=>x!==m);
+}
+function selChip(el,groupId,val){
+  document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  if(groupId==='chips-tipo')S.tipo=val;
+  else S.nivel=val;
+}
+
+// UPLOAD
+function hFiles(e){Array.from(e.target.files).forEach(f=>{if(S.arqs.length<2)S.arqs.push(f);});rPills();}
+function rPills(){
+  const c=document.getElementById('fpills');c.innerHTML='';
+  S.arqs.forEach((f,i)=>{
+    const d=document.createElement('div');d.className='fpill';
+    d.innerHTML=`<span>📄 ${f.name}</span><span class="frm" onclick="rmF(${i})">×</span>`;
+    c.appendChild(d);
+  });
+}
+function rmF(i){S.arqs.splice(i,1);rPills();}
+const uz=document.getElementById('uzone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.style.borderColor='var(--accent2)';});
+uz.addEventListener('dragleave',()=>uz.style.borderColor='');
+uz.addEventListener('drop',e=>{
+  e.preventDefault();uz.style.borderColor='';
+  Array.from(e.dataTransfer.files).filter(f=>/\.(pdf|txt|md)$/i.test(f.name)).forEach(f=>{if(S.arqs.length<2)S.arqs.push(f);});
+  rPills();
+});
+async function lerArq(f){
+  return new Promise(r=>{
+    if(f.type==='application/pdf'){r(`[PDF: ${f.name} — conteúdo não extraível no navegador, use TXT]`);return;}
+    const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsText(f);
+  });
+}
+
+// HELPERS
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function escolherMat(){return S.mats.length?rnd(S.mats):'Tutoria';}
+function escolherTipo(){return S.tipo==='Variado'?rnd(['QOME','QOME','QOME','QOOI','QOAS','QOVF','QOAR']):S.tipo;}
+function escolherNivel(){return S.nivel==='Variado'?rnd(['Fácil','Moderada','Difícil']):S.nivel;}
+function sDots(){let n=0;di=setInterval(()=>{n=(n+1)%4;document.getElementById('dots').textContent='.'.repeat(n+1);},400);}
+
+// GERAR
+async function gerar(){
+  if(!S.mats.length){alert('Selecione pelo menos uma matéria.');return;}
+
+  const tipo=escolherTipo();
+  const nivel=escolherNivel();
+  const materia=escolherMat();
+  const tema=document.getElementById('tema').value.trim();
+
+  let material='';
+  for(const f of S.arqs)material+=await lerArq(f)+'\n\n';
+
+  const btn=document.getElementById('btnGerar');
+  btn.disabled=true;btn.classList.add('loading');sDots();
+  document.getElementById('ebox').innerHTML='';
+  document.getElementById('gab').classList.remove('show');
+  document.getElementById('btnNova').style.display='none';
+
+  const res=document.getElementById('resultado');
+  res.classList.add('show');
+  document.getElementById('loadingArea').style.display='block';
+  document.getElementById('qfmt').style.display='none';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+  S.q='';S.gab='';
+
+  try{
+    const resp=await fetch('/.netlify/functions/groq',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({tipo,materia,nivel,tema,material})
+    });
+
+    const data=await resp.json();
+
+    if(!resp.ok){
+      throw new Error(data.error||'Erro no servidor: '+resp.status);
+    }
+
+    const{questao,temaUsado}=data;
+    if(!questao)throw new Error('Resposta vazia. Tente novamente.');
+
+    document.getElementById('tag-mat').textContent=materia;
+    document.getElementById('tag-tipo').textContent=tipo;
+    document.getElementById('tag-nivel').textContent=nivel;
+
+    const parts=questao.split(/GABARITO:/i);
+    S.q=parts[0].trim();
+    S.gab=parts[1]?parts[1].trim():'';
+
+    rQuestao(S.q);
+    document.getElementById('loadingArea').style.display='none';
+    document.getElementById('qfmt').style.display='block';
+    document.getElementById('btnNova').style.display='block';
+
+    addH(temaUsado||tema||materia,tipo,materia,nivel,questao,S.gab);
+
+  }catch(err){
+    document.getElementById('ebox').innerHTML=`<div class="errbox">❌ ${err.message}</div>`;
+    document.getElementById('loadingArea').style.display='none';
+    res.classList.remove('show');
+  }
+
+  btn.disabled=false;btn.classList.remove('loading');clearInterval(di);
+}
+
+function rQuestao(txt){
+  const c=document.getElementById('qfmt');c.innerHTML='';
+  const ls=txt.split('\n');
+  const ai=ls.findIndex(l=>/^[A-D]\)/.test(l.trim()));
+
+  if(ai===-1){
+    const d=document.createElement('div');d.className='q-enunciado';
+    d.style.borderColor='var(--border)';d.textContent=txt;c.appendChild(d);return;
+  }
+
+  // Enunciado
+  const env=document.createElement('div');env.className='q-enunciado';
+  env.textContent=ls.slice(0,ai).join('\n').trim();c.appendChild(env);
+
+  // Alternativas
+  const ad=document.createElement('div');ad.className='q-alts';
+  let L='',T='';
+  const sv=()=>{
+    if(!L)return;
+    const d=document.createElement('div');d.className='q-alt';
+    d.setAttribute('data-l',L);d.onclick=()=>selA(d);
+    d.innerHTML=`<div class="q-letra">${L}</div><div style="flex:1">${T.trim()}</div>`;
+    ad.appendChild(d);
+  };
+  for(const l of ls.slice(ai)){
+    const m=l.match(/^([A-D])\)/);
+    if(m){sv();L=m[1];T=l.replace(/^[A-D]\)/,'').trim();}
+    else if(L&&l.trim())T+=' '+l.trim();
+  }
+  sv();c.appendChild(ad);
+}
+
+function selA(el){document.querySelectorAll('.q-alt').forEach(a=>a.classList.remove('sel'));el.classList.add('sel');}
+
+function vGab(){
+  if(!S.gab)return;
+  document.getElementById('gabtxt').textContent=S.gab;
+  document.getElementById('gab').classList.add('show');
+  const m=S.gab.match(/^([A-D])/);
+  if(m){
+    document.querySelectorAll('.q-alt').forEach(a=>{
+      const l=a.getAttribute('data-l');
+      if(l===m[1])a.classList.add('ok');
+      else if(a.classList.contains('sel')){a.classList.remove('sel');a.classList.add('nok');}
+    });
+  }
+  document.getElementById('gab').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copiar(){
+  const t=S.q+(S.gab?'\n\nGABARITO: '+S.gab:'');
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=document.querySelector('.rbtn');
+    b.textContent='✓ Copiado!';
+    setTimeout(()=>b.textContent='📋 Copiar',2000);
+  });
+}
+
+function nova(){
+  document.getElementById('gab').classList.remove('show');
+  document.querySelectorAll('.q-alt').forEach(a=>a.classList.remove('sel','ok','nok'));
+  gerar();
+}
+
+// HISTÓRICO
+function addH(tema,tipo,mat,nivel,q,gab){
+  hist.unshift({id:Date.now(),tema,tipo,mat,nivel,q,gab,res:'pendente',ts:new Date().toLocaleString('pt-BR')});
+  localStorage.setItem('cmd_hist',JSON.stringify(hist));
+  uStats();
+}
+function mRes(id,r){const h=hist.find(x=>x.id===id);if(h){h.res=r;localStorage.setItem('cmd_hist',JSON.stringify(hist));rHist();}}
+function delH(id){hist=hist.filter(x=>x.id!==id);localStorage.setItem('cmd_hist',JSON.stringify(hist));rHist();}
+function filH(el,f){document.querySelectorAll('.hfil').forEach(x=>x.classList.remove('on'));el.classList.add('on');S.hf=f;rHL();}
+function rHist(){uStats();rHL();rPerf();}
+
+function uStats(){
+  const ac=hist.filter(h=>h.res==='acerto').length;
+  const er=hist.filter(h=>h.res==='erro').length;
+  const pe=hist.filter(h=>h.res==='pendente').length;
+  document.getElementById('st').textContent=hist.length;
+  document.getElementById('sa').textContent=ac;
+  document.getElementById('se').textContent=er;
+  document.getElementById('spe').textContent=pe;
+  const t=ac+er;
+  document.getElementById('sp').textContent=t>0?Math.round(ac/t*100)+'% acerto':'—';
+}
+
+function rHL(){
+  const list=document.getElementById('hlist');list.innerHTML='';
+  const f=S.hf;
+  const items=hist.filter(h=>
+    f==='todas'||
+    (f==='acertos'&&h.res==='acerto')||
+    (f==='erros'&&h.res==='erro')||
+    (f==='pendentes'&&h.res==='pendente')
+  );
+  if(!items.length){
+    list.innerHTML='<div class="hempty">🔍 Nenhuma questão nesta categoria.</div>';return;
+  }
+  const cores={
+    'Pneumologia':'#1a5c9e','Neurologia':'#7b3fa0','Psiquiatria':'#2d6a4f',
+    'Ortopedia/Reumatologia':'#b8860b','Urgência e Emergência':'#c82a2a',
+    'Tutoria':'#0d7377','Fisiologia':'#1a6b4a','Anatomia':'#5a3e8a',
+    'Bioquímica':'#8a3e1a','Farmacologia':'#1a4a8a','Histologia':'#6b4a1a',
+    'Patologia':'#8a1a2a','Microbiologia/Imunologia':'#1a6b6b',
+    'Biologia Celular e Molecular':'#4a1a6b'
+  };
+  items.forEach(h=>{
+    const ic=h.res==='acerto'?'✅':h.res==='erro'?'❌':'🕐';
+    const cls=h.res==='acerto'?'hit':h.res==='erro'?'miss':'pend';
+    const div=document.createElement('div');div.className='hi';div.id='hi-'+h.id;
+    div.innerHTML=`
+      <div class="hih" onclick="document.getElementById('hi-${h.id}').classList.toggle('open')">
+        <div class="hdot" style="background:${cores[h.mat]||'#888'}"></div>
+        <div class="hinfo">
+          <div class="htema">${h.tema}</div>
+          <div class="hmeta">${h.mat} · ${h.tipo} · ${h.nivel} · ${h.ts}</div>
+        </div>
+        <div class="hico ${cls}">${ic}</div>
+      </div>
+      <div class="hib">
+        <div class="hprev">${h.q.split('\n').slice(0,8).join('\n')}</div>
+        ${h.gab?`<div class="hgab"><b>Gabarito:</b> ${h.gab.slice(0,200)}...</div>`:''}
+        <div class="hfoot">
+          <button class="hbtn" onclick="mRes(${h.id},'acerto');event.stopPropagation()">✅ Acertei</button>
+          <button class="hbtn" onclick="mRes(${h.id},'erro');event.stopPropagation()">❌ Errei</button>
+          <button class="hbtn" onclick="reusar(${h.id});event.stopPropagation()">♻️ Reusar</button>
+          <button class="hbtn danger" onclick="delH(${h.id});event.stopPropagation()">🗑</button>
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function reusar(id){
+  const h=hist.find(x=>x.id===id);if(!h)return;
+  document.getElementById('tema').value=h.tema;
+  sv('gerar',document.querySelector('.ntab'));
+}
+
+function rPerf(){
+  const sec=document.getElementById('perfsec');const g=document.getElementById('perfgrid');
+  const tm={};
+  hist.forEach(h=>{
+    if(!tm[h.tema])tm[h.tema]={ac:0,er:0,tot:0};
+    tm[h.tema].tot++;
+    if(h.res==='acerto')tm[h.tema].ac++;
+    if(h.res==='erro')tm[h.tema].er++;
+  });
+  const keys=Object.keys(tm);
+  if(!keys.length){sec.style.display='none';return;}
+  sec.style.display='block';g.innerHTML='';
+  keys.slice(0,6).forEach(t=>{
+    const d=tm[t];const ten=d.ac+d.er;const pct=ten>0?Math.round(d.ac/ten*100):null;
+    const cor=pct===null?'var(--gold)':pct>=70?'var(--green)':pct>=40?'var(--gold)':'var(--red)';
+    const div=document.createElement('div');div.className='pi';
+    div.innerHTML=`
+      <div class="ptema" title="${t}">${t}</div>
+      <div class="pbw"><div class="pb" style="width:${pct||0}%;background:${cor}"></div></div>
+      <div class="pst">
+        <span>${d.ac}✅ ${d.er}❌ ${d.tot-d.ac-d.er}🕐</span>
+        <span style="font-weight:600;color:${cor}">${pct!==null?pct+'%':'—'}</span>
+      </div>`;
+    g.appendChild(div);
+  });
+}
+
+uStats();
+</script>
+</body>
+</html>
